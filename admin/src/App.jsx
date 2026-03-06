@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "./components/Login/Login";
 
 const App = () => {
-  const url = import.meta.env.VITE_API_URL || "https://food.trungdevops.vn";
+  const url = import.meta.env.VITE_API_URL || "http://food.trungdevops.vn";
   return (
     <div>
       <ToastContainer />

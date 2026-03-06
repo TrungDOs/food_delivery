@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-ARG VITE_API_URL=https://food.trungdevops.vn
+ARG VITE_API_URL=http://food.trungdevops.vn
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 

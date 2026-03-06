@@ -23,16 +23,17 @@ Required in `backend/.env`:
 - `MONGO_URL`
 - `JWT_SECRET`
 - `STRIPE_SECRET_KEY`
-- `FRONTEND_URL=https://food.trungdevops.vn`
-- `CORS_ORIGINS=https://food.trungdevops.vn,https://admin.food.trungdevops.vn`
+- `FRONTEND_URL=http://food.trungdevops.vn`
+- `CORS_ORIGINS=http://food.trungdevops.vn,http://admin.food.trungdevops.vn`
 
 ## Run
 
 ```bash
 cd deploy/single-host
-cp .env.example .env
 docker compose up -d --build
 ```
+
+No `.env` file is required for this folder unless you want to override defaults.
 
 ## Verify
 

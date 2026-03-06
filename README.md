@@ -121,20 +121,20 @@ Start the Backend server
 1. Copy backend env:
    - `cp backend/.env.example backend/.env`
    - Update at least: `MONGO_URL`, `JWT_SECRET`, `STRIPE_SECRET_KEY`
-   - Set `FRONTEND_URL` to your public frontend domain (example `https://food.trungdevops.vn`)
-   - Set `CORS_ORIGINS` to both frontend and admin domains (example `https://food.trungdevops.vn,https://admin.food.trungdevops.vn`)
+   - Set `FRONTEND_URL` to your public frontend domain (example `http://food.trungdevops.vn`)
+   - Set `CORS_ORIGINS` to both frontend and admin domains (example `http://food.trungdevops.vn,http://admin.food.trungdevops.vn`)
 
 2. Build and run with a public API URL:
 
 ```bash
 # Linux/macOS
-export VITE_API_URL=https://food.trungdevops.vn
+export VITE_API_URL=http://food.trungdevops.vn
 docker compose up -d --build
 ```
 
 ```powershell
 # Windows PowerShell
-$env:VITE_API_URL="https://food.trungdevops.vn"
+$env:VITE_API_URL="http://food.trungdevops.vn"
 docker compose up -d --build
 ```
 
@@ -155,8 +155,8 @@ Kubernetes manifests are in `k8s/`:
 
 ```bash
 docker build -t your-dockerhub-user/food-backend:latest ./backend
-docker build -t your-dockerhub-user/food-frontend:latest --build-arg VITE_API_URL=https://food.trungdevops.vn ./frontend
-docker build -t your-dockerhub-user/food-admin:latest --build-arg VITE_API_URL=https://food.trungdevops.vn ./admin
+docker build -t your-dockerhub-user/food-frontend:latest --build-arg VITE_API_URL=http://food.trungdevops.vn ./frontend
+docker build -t your-dockerhub-user/food-admin:latest --build-arg VITE_API_URL=http://food.trungdevops.vn ./admin
 
 docker push your-dockerhub-user/food-backend:latest
 docker push your-dockerhub-user/food-frontend:latest
@@ -188,7 +188,7 @@ Point these DNS records to your Ingress public IP:
 - `admin.food.trungdevops.vn` -> admin
 
 With this setup:
-- frontend calls backend via `https://food.trungdevops.vn`
-- admin calls backend via `https://food.trungdevops.vn`
+- frontend calls backend via `http://food.trungdevops.vn`
+- admin calls backend via `http://food.trungdevops.vn`
 - backend allows CORS for both frontend/admin domains
 - Stripe redirect returns to `FRONTEND_URL`
