@@ -116,19 +116,6 @@ Start the Backend server
 * [JWT-Authentication](https://jwt.io/introduction)
 * [Multer](https://www.npmjs.com/package/multer)
 
-## Deployment
-
-The application is deployed on Render.
-
-## Contributing
-
-Contributions are always welcome!
-Just raise an issue, and we will discuss it.
-
-## Feedback
-
-If you have any feedback, please reach out to me [here](https://www.linkedin.com/in/muhammad-shan-full-stack-developer/)
-
 ## Run In Containers On Another Server
 
 1. Copy backend env:
