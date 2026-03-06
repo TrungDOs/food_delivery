@@ -154,7 +154,7 @@ Kubernetes manifests are in `k8s/`:
 ### 1) Build and push images
 
 ```bash
-docker build -t your-dockerhub-user/food-backend:latest -f Dockerfile .
+docker build -t your-dockerhub-user/food-backend:latest ./backend
 docker build -t your-dockerhub-user/food-frontend:latest --build-arg VITE_API_URL=https://food.trungdevops.vn ./frontend
 docker build -t your-dockerhub-user/food-admin:latest --build-arg VITE_API_URL=https://food.trungdevops.vn ./admin
 
