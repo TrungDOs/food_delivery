@@ -6,7 +6,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // placing user order for frontend
 const placeOrder = async (req, res) => {
-  const frontend_url = "https://food-delivery-frontend-s2l9.onrender.com";
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+
   try {
     const newOrder = new orderModel({
       userId: req.body.userId,
@@ -40,10 +41,10 @@ const placeOrder = async (req, res) => {
     });
 
     const session = await stripe.checkout.sessions.create({
-      line_items: line_items,
+      line_items,
       mode: "payment",
-      success_url: `${frontend_url}/verify?success=true&orderId=${newOrder._id}`,
-      cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
+      success_url: `${frontendUrl}/verify?success=true&orderId=${newOrder._id}`,
+      cancel_url: `${frontendUrl}/verify?success=false&orderId=${newOrder._id}`,
     });
 
     res.json({ success: true, session_url: session.url });
@@ -105,7 +106,7 @@ const updateStatus = async (req, res) => {
         status: req.body.status,
       });
       res.json({ success: true, message: "Status Updated Successfully" });
-    }else{
+    } else {
       res.json({ success: false, message: "You are not an admin" });
     }
   } catch (error) {

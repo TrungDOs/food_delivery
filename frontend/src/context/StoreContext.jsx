@@ -6,7 +6,7 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const url = "https://food-delivery-backend-5b6g.onrender.com";
+  const url = import.meta.env.VITE_API_URL || "http://localhost:4000";
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
 
@@ -17,15 +17,15 @@ const StoreContextProvider = (props) => {
       setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
     }
     if (token) {
-      const response=await axios.post(
+      const response = await axios.post(
         url + "/api/cart/add",
         { itemId },
         { headers: { token } }
       );
-      if(response.data.success){
-        toast.success("item Added to Cart")
-      }else{
-        toast.error("Something went wrong")
+      if (response.data.success) {
+        toast.success("item Added to Cart");
+      } else {
+        toast.error("Something went wrong");
       }
     }
   };
@@ -33,15 +33,15 @@ const StoreContextProvider = (props) => {
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
     if (token) {
-      const response= await axios.post(
+      const response = await axios.post(
         url + "/api/cart/remove",
         { itemId },
         { headers: { token } }
       );
-      if(response.data.success){
-        toast.success("item Removed from Cart")
-      }else{
-        toast.error("Something went wrong")
+      if (response.data.success) {
+        toast.success("item Removed from Cart");
+      } else {
+        toast.error("Something went wrong");
       }
     }
   };
@@ -50,7 +50,7 @@ const StoreContextProvider = (props) => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = food_list.find((product) => product._id === item);
+        const itemInfo = food_list.find((product) => product._id === item);
         totalAmount += itemInfo.price * cartItems[item];
       }
     }
@@ -66,11 +66,11 @@ const StoreContextProvider = (props) => {
     }
   };
 
-  const loadCardData = async (token) => {
+  const loadCardData = async (tokenValue) => {
     const response = await axios.post(
       url + "/api/cart/get",
       {},
-      { headers: { token } }
+      { headers: { token: tokenValue } }
     );
     setCartItems(response.data.cartData);
   };

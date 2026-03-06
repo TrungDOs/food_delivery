@@ -128,3 +128,81 @@ Just raise an issue, and we will discuss it.
 ## Feedback
 
 If you have any feedback, please reach out to me [here](https://www.linkedin.com/in/muhammad-shan-full-stack-developer/)
+
+## Run In Containers On Another Server
+
+1. Copy backend env:
+   - `cp backend/.env.example backend/.env`
+   - Update at least: `MONGO_URL`, `JWT_SECRET`, `STRIPE_SECRET_KEY`
+   - Set `FRONTEND_URL` to your public frontend domain (example `https://app.example.com`)
+   - Set `CORS_ORIGINS` to both frontend and admin domains (example `https://app.example.com,https://admin.example.com`)
+
+2. Build and run with a public API URL:
+
+```bash
+# Linux/macOS
+export VITE_API_URL=https://api.example.com
+docker compose up -d --build
+```
+
+```powershell
+# Windows PowerShell
+$env:VITE_API_URL="https://api.example.com"
+docker compose up -d --build
+```
+
+`frontend` and `admin` are static builds, so `VITE_API_URL` must be correct when building images.
+
+## Kubernetes Deployment (backend + frontend + admin)
+
+Kubernetes manifests are in `k8s/`:
+- `00-namespace.yaml`
+- `01-backend-configmap.yaml`
+- `02-backend-secret.yaml`
+- `03-backend.yaml`
+- `04-frontend.yaml`
+- `05-admin.yaml`
+- `06-ingress.yaml`
+
+### 1) Build and push images
+
+```bash
+docker build -t your-dockerhub-user/food-backend:latest -f Dockerfile .
+docker build -t your-dockerhub-user/food-frontend:latest --build-arg VITE_API_URL=https://api.example.com ./frontend
+docker build -t your-dockerhub-user/food-admin:latest --build-arg VITE_API_URL=https://api.example.com ./admin
+
+docker push your-dockerhub-user/food-backend:latest
+docker push your-dockerhub-user/food-frontend:latest
+docker push your-dockerhub-user/food-admin:latest
+```
+
+### 2) Update manifests
+
+- Replace `your-dockerhub-user/...` image names in:
+  - `k8s/03-backend.yaml`
+  - `k8s/04-frontend.yaml`
+  - `k8s/05-admin.yaml`
+- Update domains in:
+  - `k8s/01-backend-configmap.yaml`
+  - `k8s/06-ingress.yaml`
+- Update secrets in:
+  - `k8s/02-backend-secret.yaml`
+
+### 3) Apply to cluster
+
+```bash
+kubectl apply -f k8s/
+```
+
+### 4) DNS mapping
+
+Point these DNS records to your Ingress public IP:
+- `api.example.com` -> backend
+- `app.example.com` -> frontend
+- `admin.example.com` -> admin
+
+With this setup:
+- frontend calls backend via `https://api.example.com`
+- admin calls backend via `https://api.example.com`
+- backend allows CORS for both frontend/admin domains
+- Stripe redirect returns to `FRONTEND_URL`
