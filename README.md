@@ -149,7 +149,8 @@ Kubernetes manifests are in `k8s/`:
 - `03-backend.yaml`
 - `04-frontend.yaml`
 - `05-admin.yaml`
-- `06-ingress.yaml`
+- `06-ingress.yaml` (NGINX Ingress option)
+- `07-ingress-haproxy.yaml` (HAProxy Ingress option)
 
 ### 1) Build and push images
 
@@ -177,9 +178,31 @@ docker push your-dockerhub-user/food-admin:latest
 
 ### 3) Apply to cluster
 
+Option A - NGINX Ingress:
+
 ```bash
-kubectl apply -f k8s/
+kubectl apply -f k8s/00-namespace.yaml
+kubectl apply -f k8s/01-backend-configmap.yaml
+kubectl apply -f k8s/02-backend-secret.yaml
+kubectl apply -f k8s/03-backend.yaml
+kubectl apply -f k8s/04-frontend.yaml
+kubectl apply -f k8s/05-admin.yaml
+kubectl apply -f k8s/06-ingress.yaml
 ```
+
+Option B - HAProxy Ingress:
+
+```bash
+kubectl apply -f k8s/00-namespace.yaml
+kubectl apply -f k8s/01-backend-configmap.yaml
+kubectl apply -f k8s/02-backend-secret.yaml
+kubectl apply -f k8s/03-backend.yaml
+kubectl apply -f k8s/04-frontend.yaml
+kubectl apply -f k8s/05-admin.yaml
+kubectl apply -f k8s/07-ingress-haproxy.yaml
+```
+
+Make sure your cluster has the corresponding ingress controller installed (`nginx` or `haproxy`).
 
 ### 4) DNS mapping
 

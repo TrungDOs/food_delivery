@@ -43,9 +43,9 @@
 
 ## Request Flow
 
-1. User opens `https://food.trungdevops.vn` -> Ingress -> `frontend` service.
-2. Frontend calls `https://food.trungdevops.vn/api/...` -> Ingress routes `/api` to `backend` service.
-3. Admin opens `https://admin.food.trungdevops.vn` -> Ingress -> `admin` service, and admin APIs also go to backend.
+1. User opens `http://food.trungdevops.vn` -> Ingress -> `frontend` service.
+2. Frontend calls `http://food.trungdevops.vn/api/...` -> Ingress routes `/api` to `backend` service.
+3. Admin opens `http://admin.food.trungdevops.vn` -> Ingress -> `admin` service, and admin APIs also go to backend.
 4. Backend connects to MongoDB via `MONGO_URL`.
 5. Uploaded images are served from `/images` and stored on PVC mounted at `/app/uploads`.
 
@@ -61,10 +61,10 @@
 ## Required Environment
 
 - Frontend/Admin build:
-  - `VITE_API_URL=https://food.trungdevops.vn`
+  - `VITE_API_URL=http://food.trungdevops.vn`
 - Backend runtime:
   - `MONGO_URL=...`
   - `JWT_SECRET=...`
   - `STRIPE_SECRET_KEY=...`
-  - `FRONTEND_URL=https://food.trungdevops.vn`
-  - `CORS_ORIGINS=https://food.trungdevops.vn,https://admin.food.trungdevops.vn`
+  - `FRONTEND_URL=http://food.trungdevops.vn`
+  - `CORS_ORIGINS=http://food.trungdevops.vn,http://admin.food.trungdevops.vn`
