@@ -134,20 +134,20 @@ If you have any feedback, please reach out to me [here](https://www.linkedin.com
 1. Copy backend env:
    - `cp backend/.env.example backend/.env`
    - Update at least: `MONGO_URL`, `JWT_SECRET`, `STRIPE_SECRET_KEY`
-   - Set `FRONTEND_URL` to your public frontend domain (example `https://app.example.com`)
-   - Set `CORS_ORIGINS` to both frontend and admin domains (example `https://app.example.com,https://admin.example.com`)
+   - Set `FRONTEND_URL` to your public frontend domain (example `https://food.trungdevops.vn`)
+   - Set `CORS_ORIGINS` to both frontend and admin domains (example `https://food.trungdevops.vn,https://admin.food.trungdevops.vn`)
 
 2. Build and run with a public API URL:
 
 ```bash
 # Linux/macOS
-export VITE_API_URL=https://api.example.com
+export VITE_API_URL=https://food.trungdevops.vn
 docker compose up -d --build
 ```
 
 ```powershell
 # Windows PowerShell
-$env:VITE_API_URL="https://api.example.com"
+$env:VITE_API_URL="https://food.trungdevops.vn"
 docker compose up -d --build
 ```
 
@@ -168,8 +168,8 @@ Kubernetes manifests are in `k8s/`:
 
 ```bash
 docker build -t your-dockerhub-user/food-backend:latest -f Dockerfile .
-docker build -t your-dockerhub-user/food-frontend:latest --build-arg VITE_API_URL=https://api.example.com ./frontend
-docker build -t your-dockerhub-user/food-admin:latest --build-arg VITE_API_URL=https://api.example.com ./admin
+docker build -t your-dockerhub-user/food-frontend:latest --build-arg VITE_API_URL=https://food.trungdevops.vn ./frontend
+docker build -t your-dockerhub-user/food-admin:latest --build-arg VITE_API_URL=https://food.trungdevops.vn ./admin
 
 docker push your-dockerhub-user/food-backend:latest
 docker push your-dockerhub-user/food-frontend:latest
@@ -197,12 +197,11 @@ kubectl apply -f k8s/
 ### 4) DNS mapping
 
 Point these DNS records to your Ingress public IP:
-- `api.example.com` -> backend
-- `app.example.com` -> frontend
-- `admin.example.com` -> admin
+- `food.trungdevops.vn` -> frontend + backend routes (`/api`, `/images`)
+- `admin.food.trungdevops.vn` -> admin
 
 With this setup:
-- frontend calls backend via `https://api.example.com`
-- admin calls backend via `https://api.example.com`
+- frontend calls backend via `https://food.trungdevops.vn`
+- admin calls backend via `https://food.trungdevops.vn`
 - backend allows CORS for both frontend/admin domains
 - Stripe redirect returns to `FRONTEND_URL`

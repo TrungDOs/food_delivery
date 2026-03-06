@@ -13,7 +13,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000}
+        VITE_API_URL: ${VITE_API_URL:-https://food.trungdevops.vn}
     ports:
       - "${FRONTEND_PORT:-5173}:80"
     depends_on:
@@ -24,7 +24,7 @@ services:
     build:
       context: ./admin
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000}
+        VITE_API_URL: ${VITE_API_URL:-https://food.trungdevops.vn}
     ports:
       - "${ADMIN_PORT:-5174}:80"
     depends_on:
