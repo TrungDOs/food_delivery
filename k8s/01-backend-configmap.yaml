@@ -5,5 +5,5 @@ metadata:
   namespace: food-delivery
 data:
   PORT: "4000"
-  FRONTEND_URL: "https://food.trungdevops.vn"
-  CORS_ORIGINS: "https://food.trungdevops.vn,https://admin.food.trungdevops.vn"
+  FRONTEND_URL: "http://food.trungdevops.vn"
+  CORS_ORIGINS: "http://food.trungdevops.vn,http://admin.food.trungdevops.vn"

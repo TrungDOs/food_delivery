@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: your-dockerhub-user/food-frontend:latest
+          image: trungdevops/food-delivery-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

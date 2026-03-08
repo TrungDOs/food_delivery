@@ -12,7 +12,7 @@ const app = express();
 const port = process.env.PORT || 4000;
   const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
-  : ["https://food.trungdevops.vn", "https://admin.food.trungdevops.vn"];
+  : ["http://food.trungdevops.vn", "https://admin.food.trungdevops.vn"];
 
 // middlewares
 app.use(express.json());

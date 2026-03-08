@@ -1,70 +1,64 @@
-# Food Delivery Architecture (Kubernetes + Ingress)
+# Food Delivery Architecture (Current Kubernetes Runtime)
+
+Last verified: 2026-03-08 (live cluster)
+
+## Topology
 
 ```text
-                          Internet
-                              |
-                    DNS A records (same LB IP)
-              food.trungdevops.vn / admin.food.trungdevops.vn
-                              |
-                    +------------------------+
-                    |  NGINX Ingress Ctrl    |
-                    |  (Kubernetes proxy)    |
-                    +------------------------+
-                       |                  |
-      host=food.trungdevops.vn      host=admin.food.trungdevops.vn
-      /            -> frontend-svc   / -> admin-svc
-      /api,/images -> backend-svc
-                       |
-     +-----------------+------------------+
-     |                                    |
-+------------+                      +-------------+
-| frontend   |                      |   admin     |
-| Deployment |                      | Deployment  |
-| (nginx)    |                      | (nginx)     |
-+------------+                      +-------------+
-          \                            /
-           \   HTTPS calls /api       /
-            +------------------------+
-            |      backend-svc       |
-            +------------------------+
-                      |
-               +--------------+
-               | backend pod  |
-               | Node/Express |
-               +--------------+
-                 |        |
-          /app/uploads    | MONGO_URL
-            PVC           v
-                    +-------------+
-                    | MongoDB     |
-                    | (Atlas/self)|
-                    +-------------+
+Internet
+  |
+  | DNS A records
+  | - food.trungdevops.vn
+  | - admin.food.trungdevops.vn
+  v
+GCP Load Balancer (created by Service type LoadBalancer)
+  External IP: 34.124.236.203
+  |
+  v
+Namespace: ingress-nginx
+  Service: ingress-nginx-controller (LoadBalancer)
+    - 80  -> NodePort 30931
+    - 443 -> NodePort 31063
+  Pods: ingress-nginx-controller x3 (Running, spread across 3 nodes)
+  IngressClass: nginx (controller: k8s.io/ingress-nginx)
+  |
+  v
+Namespace: food-delivery
+  Ingress: food-delivery-ingress (class nginx, ADDRESS 34.124.236.203)
+    host food.trungdevops.vn
+      /api*    -> service/backend:4000
+      /images* -> service/backend:4000
+      /*       -> service/frontend:80
+    host admin.food.trungdevops.vn
+      /*       -> service/admin:80
+
+  Service frontend (ClusterIP:80) -> frontend deployment (3/3 available)
+  Service admin    (ClusterIP:80) -> admin deployment (3/3 available)
+  Service backend  (ClusterIP:4000) -> backend deployment (1/1 available)
+  PVC backend-uploads-pvc (2Gi, Bound) mounted at /app/uploads
+  |
+  v
+External MongoDB on Rancher host
+  34.101.158.188:27017
+  authSource=admin
+  app DB: food_delivery
 ```
 
 ## Request Flow
 
-1. User opens `http://food.trungdevops.vn` -> Ingress -> `frontend` service.
-2. Frontend calls `http://food.trungdevops.vn/api/...` -> Ingress routes `/api` to `backend` service.
-3. Admin opens `http://admin.food.trungdevops.vn` -> Ingress -> `admin` service, and admin APIs also go to backend.
-4. Backend connects to MongoDB via `MONGO_URL`.
-5. Uploaded images are served from `/images` and stored on PVC mounted at `/app/uploads`.
+1. Client resolves domain to `34.124.236.203`.
+2. GCP LB forwards traffic to `ingress-nginx-controller` service.
+3. NGINX Ingress Controller reads `food-delivery-ingress` (`ingressClassName: nginx`).
+4. Controller routes by host/path to `frontend`, `backend`, or `admin` service.
+5. Backend reads config/secret via `envFrom`, writes uploads to PVC, and connects to MongoDB host `34.101.158.188`.
 
-## Routing Rules (Current)
+## Active vs Inactive Ingress
 
-- Host `food.trungdevops.vn`:
-  - `/` -> frontend
-  - `/api` -> backend
-  - `/images` -> backend
-- Host `admin.food.trungdevops.vn`:
-  - `/` -> admin
+- Active: `food-delivery-ingress` (class `nginx`)
+- Inactive: `food-delivery-ingress-haproxy` (class `haproxy`, no HAProxy controller installed)
 
-## Required Environment
+## Runtime Notes
 
-- Frontend/Admin build:
-  - `VITE_API_URL=http://food.trungdevops.vn`
-- Backend runtime:
-  - `MONGO_URL=...`
-  - `JWT_SECRET=...`
-  - `STRIPE_SECRET_KEY=...`
-  - `FRONTEND_URL=http://food.trungdevops.vn`
-  - `CORS_ORIGINS=http://food.trungdevops.vn,http://admin.food.trungdevops.vn`
+- Backend logs show `DB Connected`.
+- Current signin issue is data-level (`User Doesn't exist`) when no user is present in `food_delivery.users`, not DB connectivity.
+- Backend PVC uses `ReadWriteOnce` (`standard-rwo`), so backend should stay `replicas=1` unless storage is migrated to RWX.

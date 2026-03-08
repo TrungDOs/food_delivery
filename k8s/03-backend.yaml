@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: your-dockerhub-user/food-backend:latest
+          image: trungdevops/food-delivery-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000
