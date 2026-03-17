@@ -1,0 +1,62 @@
+namespace:
+  create: false
+  name: food-delivery
+
+backend:
+  replicaCount: 1
+  image:
+    repository: trungdevops/food-delivery-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 4000
+    targetPort: 4000
+  containerPort: 4000
+  config:
+    PORT: "4000"
+    FRONTEND_URL: "http://food.trungdevops.vn"
+    CORS_ORIGINS: "http://food.trungdevops.vn,http://admin.food.trungdevops.vn"
+  secret:
+    MONGO_URL: "mongodb://admin:5dcf90fa75ce366ef1bde4d6aa3bf9685410f201a3117f29@34.101.158.188:27017/food_delivery?authSource=admin"
+    JWT_SECRET: "/VaWJPgK4/h+VnfaGHJhvAHdz6q9YNpCD1T64AplWkW1CYAWW6Y7Ijx0sActGM24"
+    SALT: "10"
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
+    mountPath: /app/uploads
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: trungdevops/food-delivery-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+  containerPort: 80
+
+admin:
+  replicaCount: 1
+  image:
+    repository: trungdevops/food-delivery-admin
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+  containerPort: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+  hosts:
+    app: food.trungdevops.vn
+    admin: admin.food.trungdevops.vn

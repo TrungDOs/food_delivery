@@ -1,0 +1,6 @@
+1. Get the application hosts:
+  - App: http://{{ .Values.ingress.hosts.app }}
+  - Admin: http://{{ .Values.ingress.hosts.admin }}
+
+2. Install the chart:
+  helm upgrade --install food-delivery ./helm/food-delivery -n {{ .Values.namespace.name }}{{ if .Values.namespace.create }} --create-namespace{{ end }}
